@@ -263,7 +263,7 @@ java -jar peer-node.jar --port=5003 --bootstrap=localhost:5001
 
 ## 👨‍💻 **Contributors**
 
-* **Your Name** (Developer & Architect)
+* **Aamira bushra m.** (Developer & Architect)
 
 ---
 
