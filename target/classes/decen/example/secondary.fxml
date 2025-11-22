@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml" fx:controller="decen.example.SecondaryController"
+      style="-fx-padding: 40;">
+
+    <Label text="Welcome to the Dashboard!" style="-fx-font-size: 24px;"/>
+
+    <Button text="Logout" onAction="#handleLogout" prefWidth="120"/>
+</VBox>
+
