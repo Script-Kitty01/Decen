@@ -226,7 +226,7 @@ This makes the project *exceptionally strong* for:
 ### **Steps**
 
 ```
-git clone <repo-url>
+git clone <https://github.com/Script-Kitty01/Decen.git>
 cd decentralized-cloud-drive
 mvn clean install
 java -jar target/peer-node.jar --port=[PORT] --bootstrap=[BOOTSTRAP_IP]
