@@ -1,0 +1,15 @@
+# Maven build output
+target/
+
+# Runtime DHT / node data
+data/
+data*/
+
+# Cryptographic artifacts
+*.key
+*.chunk
+*.meta
+
+# IDE / OS
+.vscode/
+.DS_Store
