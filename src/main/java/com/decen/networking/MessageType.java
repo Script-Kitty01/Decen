@@ -1,0 +1,17 @@
+package com.decen.networking;
+
+public enum MessageType {
+
+  FIND_NODE,
+FIND_NODE_RESPONSE,
+FIND_VALUE,
+FIND_VALUE_RESPONSE,
+STORE,
+STORE_CHUNK,
+GET_CHUNK,
+CHUNK_RESPONSE,
+KEY_REQUEST,
+KEY_RESPONSE,
+ERROR
+
+}
