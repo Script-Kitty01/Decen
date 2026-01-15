@@ -1,272 +1,266 @@
+# 📁 Decentralized Peer-to-Peer Cloud Drive (Java + DHT)
+
+*A Secure, Decentralized, Peer-to-Peer File Storage System Built Using Java, Kademlia-Inspired DHT, and Socket-Based Networking*
 
 ---
 
-# 📁 **Decentralized Peer-to-Peer Cloud Drive (Java + DHT)**
+## 📝 Overview
 
-*A Distributed, Fault-Tolerant, Encrypted File Storage System Built Using Java, Kademlia DHT, and P2P Networking*
+This project implements a **fully decentralized cloud storage system** where every participant acts as an equal **peer** in a distributed network.
 
----
+Unlike centralized services (Google Drive, Dropbox), this system:
+- Has **no central file server**
+- Uses **peer-to-peer communication**
+- Indexes files using a **Kademlia-style Distributed Hash Table (DHT)**
+- Encrypts data **locally before sharing**
 
-## 📝 **Overview**
+Files are:
+- Split into chunks
+- Encrypted using symmetric cryptography
+- Addressed using **SHA-256 content hashes**
+- Located and retrieved via the DHT
 
-This project implements a **fully decentralized cloud storage system** where every user acts as a **peer** in a distributed network.
-Instead of using a central server like Google Drive or Dropbox, files are:
-
-* Split into **chunks**
-* **Encrypted** locally
-* Distributed across peers using a **Distributed Hash Table (Kademlia DHT)**
-* Retrieved efficiently using content addressing (SHA-256 hashes)
-
-The system is fault-tolerant, privacy-preserving, and inspired by real-world technologies like **IPFS**, **BitTorrent**, **Amazon Dynamo**, and **Ethereum’s DHT**.
-
----
-
-## 🚀 **Key Features**
-
-### 🔹 **1. Decentralized Architecture (No Central Server)**
-
-* Peers communicate directly with each other
-* No single point of failure
-* Uses Kademlia DHT for distributed storage and lookup
-
-### 🔹 **2. Secure File Storage**
-
-* Files divided into 1MB encrypted chunks
-* AES-256 encryption for data
-* RSA for key exchange
-* SHA-256 hashing for content addressing
-
-### 🔹 **3. Fault Tolerance & Replication**
-
-* Each chunk replicated across multiple nodes
-* Automatic re-replication if peers go offline
-
-### 🔹 **4. Efficient Lookup and Retrieval**
-
-* DHT ensures O(log N) lookup time
-* Parallel chunk downloading from multiple peers
-* Resilient routing and fast reads
-
-### 🔹 **5. Peer Discovery**
-
-* Bootstrap node system
-* Heartbeats & liveness detection
-* Dynamic routing table maintenance
-
-### 🔹 **6. Clean User Interface**
-
-* JavaFX desktop UI (or React dashboard)
-* Upload / Download files
-* Visualize peers, chunks, and network status
+The design is inspired by **IPFS**, **BitTorrent DHT**, and **Amazon Dynamo**, with a focus on correctness, security, and distributed-systems principles.
 
 ---
 
-## 🧱 **Architecture**
+## 🚀 Key Features (Implemented)
 
+### 1. Fully Decentralized Architecture
+- No central storage server
+- Each peer can:
+  - Store chunks
+  - Route DHT queries
+  - Serve data to other peers
+- Bootstrap node is used **only for peer discovery**
+
+### 2. Kademlia-Inspired DHT
+- 256-bit keyspace (`NodeId`)
+- XOR distance metric
+- K-bucket routing table
+- `FIND_NODE` and `FIND_VALUE` semantics
+- Logarithmic lookup behavior
+
+### 3. Secure File Storage
+- Files split into fixed-size chunks
+- Each chunk encrypted **locally**
+- Encrypted chunks hashed using **SHA-256**
+- Encryption keys are **never stored in the DHT**
+
+### 4. Content-Addressed Storage
+- File ID = SHA-256 hash
+- Chunk ID = SHA-256 hash of encrypted chunk
+- Ensures integrity and deterministic lookup
+
+### 5. Peer-to-Peer Networking
+- Raw TCP sockets
+- Custom message protocol
+- Supported message types:
+  - STORE
+  - FIND_NODE
+  - FIND_VALUE
+  - GET_CHUNK
+  - KEY_REQUEST
+
+### 6. Secure Key Exchange
+- AES key stored **only on the file owner**
+- Other peers must explicitly request the key
+- ECC-based secure key exchange
+- No plaintext key transmission
+
+### 7. CLI-Based Interface
+- Interactive terminal shell
+- Commands:
+  - `store <filePath>`
+  - `get <fileId> <outputPath>`
+  - `routes`
+  - `exit`
+
+---
+
+## 🧱 System Architecture
 ```
-                ┌──────────────────────────────┐
-                │        User Interface         │
-                │   (JavaFX / Web Dashboard)    │
-                └───────────────┬──────────────┘
-                                │
-                ┌───────────────▼──────────────┐
-                │      Client Application       │
-                └───────────────┬──────────────┘
-                                │
-      ┌─────────────────────────▼──────────────────────────┐
-      │                  Core Modules                      │
-      │  ┌──────────────┬──────────────┬────────────────┐  │
-      │  │ Networking    │  DHT Engine  │ Storage Engine │  │
-      │  │  (Netty/NIO)  │ (Kademlia)   │ (Chunks + DB)  │  │
-      │  └──────────────┴──────────────┴────────────────┘  │
-      └─────────────────────────┬──────────────────────────┘
-                                │
-                ┌───────────────▼──────────────┐
-                │         Crypto Module         │
-                └──────────────────────────────┘
-```
-
----
-
-## 🛠 **Tech Stack**
-
-### **Programming Language**
-
-* Java 17+
-
-### **Networking**
-
-* Java NIO or Netty (for P2P communication)
-* TCP/UDP sockets
-
-### **Distributed Hash Table**
-
-* Custom implementation of **Kademlia DHT**
-
-### **Serialization**
-
-* Protocol Buffers (preferred)
-  or
-* JSON (Gson / Jackson)
-
-### **Storage**
-
-* Local File System
-* H2 / LevelDB (for metadata)
-
-### **Security**
-
-* AES-256 encryption
-* RSA-2048 key exchange
-* SHA-256 hashing
-
-### **Frontend (Optional)**
-
-* JavaFX
-  or
-* React.js Dashboard
-
----
-
-## 📂 **Project Structure**
-
-```
-/src
-  /networking
-      PeerServer.java
-      PeerClient.java
-      MessageHandler.java
-
-  /dht
-      KademliaNode.java
-      RoutingTable.java
-      KBucket.java
-      DHTProtocol.java
-
-  /storage
-      FileChunker.java
-      ChunkStore.java
-      MetadataStore.java
-
-  /crypto
-      AESUtil.java
-      RSAUtil.java
-      HashUtil.java
-
-  /client
-      FileManager.java
-      PeerController.java
-
-  /ui
-      MainUI.java (JavaFX)
+┌──────────────────────────────┐
+│        CLI Interface         │
+│  (store / get / routes)      │
+└───────────────┬──────────────┘
+                │
+                ▼
+┌──────────────────────────────┐
+│         FileManager          │
+│ (Chunking + Encryption)      │
+└───────────────┬──────────────┘
+                │
+                ▼
+┌──────────────────────────────────────────┐
+│               Core Layer                  │
+│                                          │
+│  ┌───────────────┐   ┌────────────────┐ │
+│  │ Networking    │◄─►│ DHT Engine     │ │
+│  │ (TCP Sockets) │   │ (Kademlia)     │ │
+│  └───────────────┘   └────────────────┘ │
+│                                          │
+│  ┌────────────────────────────────────┐ │
+│  │          Storage Layer              │ │
+│  │  - ChunkStore (encrypted chunks)    │ │
+│  │  - MetadataStore (file → chunks)    │ │
+│  └────────────────────────────────────┘ │
+└──────────────────────────────────────────┘
 ```
 
 ---
 
-## 🔄 **How It Works**
+## 🧩 Module Breakdown
 
-### **Upload Flow**
+### client/
+- FileManager  
+  - Chunking  
+  - Encryption / Decryption  
+  - Upload & download orchestration  
+  - AES key handling  
 
-1. User selects file
-2. File split into 1MB chunks
-3. Chunks encrypted using AES
-4. Each encrypted chunk hashed (SHA-256)
-5. DHT decides which peers will store chunks
-6. Chunks sent over P2P network to responsible nodes
-7. Metadata saved locally
+- PeerController  
+  - Bootstrap logic  
+  - Peer coordination  
 
-### **Download Flow**
+### networking/
+- PeerServer – listens for incoming connections  
+- PeerClient – sends messages to peers  
+- MessageHandler – processes DHT & storage messages  
 
-1. User requests a file
-2. DHT queried for chunk locations
-3. Chunks downloaded from multiple peers
-4. AES decryption applied
-5. File reassembled
+### dht/
+- NodeId – immutable 256-bit identifiers  
+- RoutingTable – K-bucket routing  
+- DHTNode – lookup and routing logic  
 
----
+### storage/
+- ChunkStore – encrypted chunk persistence  
+- MetadataStore – file → chunk mapping  
+- FileChunker – split and reassemble logic  
 
-## 💡 **Real World Applications**
-
-* Secure decentralized cloud storage
-* Blockchain data networks
-* Privacy-preserving file systems
-* Peer-to-peer file sharing
-* Distributed backup systems
-* Offline/mesh network storage
-
----
-
-## 🎯 **What This Project Demonstrates**
-
-✔ Deep understanding of **distributed systems**
-✔ Working **P2P networking** implementation
-✔ Efficient implementation of **Kademlia DHT**
-✔ Strong knowledge of **cryptography**
-✔ End-to-end application development
-✔ Fault-tolerant system design
-✔ Advanced CS concepts beyond standard college projects
-
-This makes the project *exceptionally strong* for:
-
-* Final Year Project submission
-* Job interviews
-* GitHub portfolio
-* Research or M.Tech applications
+### crypto/
+- AESUtil – symmetric encryption  
+- ECCKeyExchangeUtil – secure key exchange  
+- HashUtil – SHA-256 hashing  
 
 ---
 
-## ▶️ **How to Run the Project**
+## 🔄 How It Works
 
-### **Prerequisites**
+### Upload Flow
+1. User runs `store <file>`
+2. File is split into chunks
+3. Chunks encrypted locally
+4. Encrypted chunks hashed (SHA-256)
+5. Metadata stored locally
+6. Metadata announced to DHT
+7. Encrypted chunks stored across peers
 
-* JDK 17+
-* Maven or Gradle
-* JavaFX (if using desktop UI)
+### Download Flow
+1. User runs `get <fileId>`
+2. DHT queried using FIND_VALUE
+3. Chunk IDs returned
+4. Chunks fetched from peers
+5. AES key obtained securely
+6. File decrypted and reassembled
 
-### **Steps**
+---
 
+## 🛠 Tech Stack
+
+| Component | Technology |
+|---------|------------|
+| Language | Java 17 |
+| Networking | TCP Sockets |
+| DHT | Custom Kademlia-Inspired |
+| Encryption | AES + ECC |
+| Hashing | SHA-256 |
+| Build Tool | Maven |
+| Interface | CLI |
+
+---
+
+## 📂 Project Structure
 ```
-git clone <https://github.com/Script-Kitty01/Decen.git>
-cd decentralized-cloud-drive
-mvn clean install
-java -jar target/peer-node.jar --port=[PORT] --bootstrap=[BOOTSTRAP_IP]
+src/
+├── client/
+│ ├── FileManager.java
+│ └── PeerController.java
+├── networking/
+│ ├── PeerServer.java
+│ ├── PeerClient.java
+│ └── MessageHandler.java
+├── dht/
+│ ├── NodeId.java
+│ ├── RoutingTable.java
+│ └── DHTNode.java
+├── storage/
+│ ├── ChunkStore.java
+│ ├── MetadataStore.java
+│ └── FileChunker.java
+└── crypto/
+├── AESUtil.java
+├── ECCKeyExchangeUtil.java
+└── HashUtil.java
 ```
 
-To start multiple peers, run:
-
-```
-java -jar peer-node.jar --port=5001
-java -jar peer-node.jar --port=5002 --bootstrap=localhost:5001
-java -jar peer-node.jar --port=5003 --bootstrap=localhost:5001
-```
 
 ---
 
-## 🧪 **Testing**
+## ▶️ How to Run
 
-* JUnit 5 for module testing
-* WireShark for packet inspection
-* Docker (optional) for multi-node simulation
+### Prerequisites
+- JDK 17+
+- Maven
+
+### Steps
+
+git clone https://github.com/Script-Kitty01/Decen.git
+cd Decen
+mvn clean package
+
+powershell
+Copy code
+
+Start peers:
+
+java -cp target/classes com.decen.Main 5001
+java -cp target/classes com.decen.Main 5002 localhost 5001
+java -cp target/classes com.decen.Main 5003 localhost 5001
+
+yaml
+Copy code
+
+---
+
+## 🎯 What This Project Demonstrates
+
+- Distributed systems fundamentals  
+- Correct DHT implementation  
+- Secure peer-to-peer networking  
+- Practical cryptography  
+- Fault-aware architecture  
+- Non-trivial systems engineering  
+
+Ideal for:
+- Backend / systems interviews
+- Research & higher studies
 
 ---
 
-## 📜 **Future Enhancements**
-
-* File versioning
-* NAT traversal (UPnP / STUN)
-* Gossip-based replication
-* Incentive layer (FileCoin-style)
-* WebRTC P2P connections
-* Mobile app variant
-
----
-
-## 👨‍💻 **Contributors**
-
-* **Aamira bushra m.** (Developer & Architect)
+## 📜 Future Enhancements
+- Metadata replication (K-factor)
+- Owner discovery in metadata
+- Automatic re-replication
+- JavaFX / Web UI
+- NAT traversal (STUN / UPnP)
+- Incentive layer (Filecoin-style)
 
 ---
 
-## ⭐ **If you like this project, give it a star on GitHub!**
+## 👨‍💻 Author
 
----
+**Aamira Bushra M.**  
+Developer & System Architect  
+
+⭐ If you like this project, consider starring the repository!
